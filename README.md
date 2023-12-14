@@ -107,6 +107,59 @@ resource "aws_default_security_group" "default" {
 
 
 ```
+# Within the same main.tf file you also need to create a Iam role/policy and attach it to your EC2 instance to give it full access to S3 buckets
+
+ ```bash
+# Define the IAM Role
+resource "aws_iam_role" "ROLENAME" {
+  name = "ROLENAME"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "ec2.amazonaws.com",
+        },
+      },
+    ],
+  })
+}
+
+# Define the IAM Role Policy
+resource "aws_iam_policy" "POLICYNAME" {
+  name        = "POLICYNAME"
+  description = "Policy for EC2 to access S3"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action   = "s3:*",  # Adjust the permissions as needed
+        Effect   = "Allow",
+        Resource = "*",
+      },
+    ],
+  })
+}
+
+# Attach the Role Policy to the Role
+resource "aws_iam_policy_attachment" "role_policy_attachment" {
+  name       = "role-policy-attachment"
+  roles      = [aws_iam_role.ROLENAME.name]
+  policy_arn = aws_iam_policy.ec2-s3-fullAccess.arn
+}
+
+# Define the IAM Instance Profile
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "ec2_profile"
+  role = aws_iam_role.ROLENAME.name
+}
+
+
+```
 
 
 

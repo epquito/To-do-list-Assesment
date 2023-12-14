@@ -72,7 +72,8 @@ resource "aws_default_vpc" "default" {
     }
   
 }
-# Refrences the default Security group that is given to you by aws but also changing the ingress/egress for this deployment
+# References the default Security Group that is given to you by AWS but also changes the ingress/egress for this deployment.
+
 resource "aws_default_security_group" "default" {
   vpc_id = aws_default_vpc.default.id
   ingress {
@@ -112,7 +113,8 @@ resource "aws_default_security_group" "default" {
 
 
 ```
-# Within the same main.tf file you also need to create a Iam role/policy and attach it to your EC2 instance to give it full access to S3 buckets
+# Within the same main.tf file, you also need to create an IAM role/policy and attach it to your EC2 instance to give it full access to S3 buckets.
+
 
  ```bash
 # Define the IAM Role
@@ -154,7 +156,7 @@ resource "aws_iam_policy" "POLICYNAME" {
 resource "aws_iam_policy_attachment" "role_policy_attachment" {
   name       = "role-policy-attachment"
   roles      = [aws_iam_role.ROLENAME.name]
-  policy_arn = aws_iam_policy.ec2-s3-fullAccess.arn
+  policy_arn = aws_iam_policy.POLICYNAME.arn
 }
 
 # Define the IAM Instance Profile
@@ -166,7 +168,8 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 
 ```
 
-# Create Your backend and database ec2 instances and attach the iam role
+# Create your backend and database EC2 instances and attach the IAM role.
+
 ```bash
 resource "aws_instance" "backend" {
      ami           = data.aws_ami.ubuntu_22.id
@@ -213,7 +216,8 @@ output "TodoList-db" {
 
 
 ```
-# Create S3 bucket and object also configure bucket policy.
+# Create S3 bucket and object, also configure bucket policy.
+
 ```bash
 resource "aws_s3_bucket" "bucket-name" {
   bucket = "bucket-name"
@@ -230,7 +234,8 @@ resource "aws_s3_bucket_object" "index" {
   bucket       = aws_s3_bucket.edwin-bucket.bucket
   key          = "index.html"
   content_type = "text/html"
-  #For this deployment I saved the index.html from the web app to my local machine
+  # For this deployment, I saved the index.html from the web app to my local machine.
+
   source = "/local/path/to/index.html"
 }
 
@@ -277,6 +282,7 @@ output "bucket_website_endpoint" {
 
 ```
 After completing the creation of your AWS architecture structure for your resources, you can now initiate the deployment, and the resources specified in the main.tf file will be provisioned within your AWS account.
+
 ```bash
 terraform plan
 terraform apply
@@ -291,15 +297,17 @@ terraform apply
 
 ```
 # With the AWS resources successfully provisioned, we can now proceed to configure the EC2 instances using Ansible.
-Within the same directory we are going to create a subdirectory named final where all the asnible files are going to be stored such as:
-- dynamic ansible inventory
-- ansible role
-- playbooks
-- ansible vault
+Within the same directory, we are going to create a subdirectory named 'final' where all the Ansible files are going to be stored, such as:
+- Dynamic Ansible inventory
+- Ansible role
+- Playbooks
+- Ansible vault
 
-Before anything we need to create all of our subdirectories for Final 
-- create backend_role/database_role directories within final
-- Each role directory will have 7 subdirectories that will execute when the main role playbook is executed
+
+Before anything, we need to create all of our subdirectories for the final deployment:
+- Create backend_role and database_role directories within the 'final' directory.
+- Each role directory will have 7 subdirectories that will execute when the main role playbook is executed.
+
 ```
 ├── backend_role
 │   ├── defaults
@@ -350,8 +358,9 @@ filters:
 
 ```
 
-# Create your main ansible role playbookm that will refrence your ansible vault for secured vairbales and be able to execute both backend and database roles automating the configurations of both ec2 instances
-When refrencing a role within ansible make sure its the name of the directory where all 7 subdirectories are preent for backend/database role.
+# Create your main Ansible role playbook that will reference your Ansible vault for secured variables and be able to execute both backend and database roles, automating the configurations of both EC2 instances.
+When referencing a role within Ansible, make sure it's the name of the directory where all 7 subdirectories are present for the backend/database role.
+
 
 role.yml
 ```bash
@@ -375,8 +384,9 @@ role.yml
 
 ```
 
-#Configure the database_role 
-Within database role we will use handles,tasks,vars subdirectories
+# Configure the database_role 
+Within the database role, we will use handlers, tasks, vars subdirectories.
+
 -tasks/main.yml:
 ```bash
 ---
@@ -448,20 +458,21 @@ Within database role we will use handles,tasks,vars subdirectories
 
 ```
 
+To create a secure file to store your variables, you would need to create an Ansible Vault file inside the directory where you want to store it.
 
-To create a secured file to use your variables you would need to create ansible vault file inside the directory you want to store it in.
 vars/vault.yml:
 ```bash
-# once inside the file is created stored your sensative information of database within this file 
+# Once inside the file is created, store your sensitive information of the database within this file.
 ansible-vault create vault.yml
 
-#If you want to edit the information insdie use this command keep in mind it will ask for the password used for the creation of the file you are trying to access
-ansible-vault edit secure.yml
+# If you want to edit the information inside, use this command. Keep in mind it will ask for the password used for the creation of the file you are trying to access.
+ansible-vault edit vault.yml
 
 ```
 
-#Now configure your backend_role files
-we are going to be using the subdirectories handlers,tasks,vars
+# Now configure your backend_role files
+We are going to be using the subdirectories handlers, tasks, vars.
+
 - tasks/main.yml:
 ```bash
 --- 
@@ -602,20 +613,21 @@ we are going to be using the subdirectories handlers,tasks,vars
 -vars/vault.yml
 You can either create a new ansible vault file and give it anoter name and password but for this deployment we actually copied the vault.yml from database_role/vars/vault.yml since the information we need is the same from that file.
 ```bash
-# once inside the file is created stored your sensative information of database within this file 
+# Once inside the file, store your sensitive information of the database within this file 
 ansible-vault create vault.yml
 
-#If you want to edit the information insdie use this command keep in mind it will ask for the password used for the creation of the file you are trying to access
-ansible-vault edit secure.yml
+# If you want to edit the information inside, use this command. Keep in mind it will ask for the password used for the creation of the file you are trying to access
+ansible-vault edit vault.yml
+
 ```
 -defaults/main.yml:
 ```bash
-# earlier within the instructions when we created database ec2 instance we ade sure to foward the key:value once it was executed to this location within the terminal so it will auto populate the newest ec2 databse ip
+# Earlier in the instructions, when we created the database EC2 instance, we made sure to forward the key:value once it was executed to this location within the terminal, so it will auto-populate the newest EC2 database IP.
 db_host: {{ databse_ec2_IP}}
 ```
 
 
-# Now both Terraform and ansible are finaly created and configure we can now activate the playbooks and iy will automatically xocnfigure the ec2 for you
+# Now that both Terraform and Ansible are finally created and configured, you can now activate the playbooks, and they will automatically configure the EC2 instances for you
 ```bash
 ansible-playbook -ask-vault-pass role.yml -i aws_ec2.yml -u ubuntu -k --private-key:/path/to/pem/file
 #or you can execute it in the main directory where terraform is located

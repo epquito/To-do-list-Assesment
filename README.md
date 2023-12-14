@@ -282,40 +282,14 @@ terraform plan
 terraform apply
 ```
 # Directory should look like this 
-├── final
-│   ├── aws_ec2.yml
-│   ├── backend_role
-│   │   ├── defaults
-│   │   │   └── main.yml
-│   │   ├── files
-│   │   ├── handlers
-│   │   │   └── main.yml
-│   │   ├── meta
-│   │   ├── tasks
-│   │   │   └── main.yml
-│   │   ├── templates
-│   │   └── vars
-│   │       ├── main.yml
-│   │       └── vault.yml
-│   ├── database_role
-│   │   ├── defaults
-│   │   ├── files
-│   │   ├── handlers
-│   │   │   └── main.yml
-│   │   ├── meta
-│   │   ├── tasks
-│   │   │   └── main.yml
-│   │   ├── templates
-│   │   └── vars
-│   │       └── vault.yml
-│   └── role.yml
+```
 ├── index.html
 ├── main.tf
 ├── provider.tf
 ├── terraform.tfstate
 ├── terraform.tfstate.backup
-└── vault.yml
 
+```
 
 
 

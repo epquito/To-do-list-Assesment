@@ -58,7 +58,12 @@ data "aws_ami" "ubuntu_22" {
 
 
 ```
-- main.tf:
+# Now initialize providers.tf
+```bash
+terraform init
+```
+
+# Create main.tf and configure your resources 
 ```bash
 # Refrences the defualt vpc that is given to you by aws
 resource "aws_default_vpc" "default" {
@@ -160,6 +165,119 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 
 
 ```
+
+# Create Your backend and database ec2 instances and attach the iam role
+```bash
+resource "aws_instance" "backend" {
+     ami           = data.aws_ami.ubuntu_22.id
+     instance_type = "t2.micro"
+     key_name      = "PEMFILE"
+     iam_instance_profile = aws_iam_instance_profile.ec2_profile.name  # Use the instance profile
+     provisioner "local-exec" {
+        command = "echo 'backend: \"${aws_instance.backend.public_ip}\"'>/path/to/project/ansible/role/var/file "
+       
+     }
+     tags = {
+        Name = "backend"
+        Enviroment = "dev"
+        Team = "mobile-app"
+        Type = "backend"
+        }
+}
+resource "aws_instance" "database" {
+     ami           = data.aws_ami.ubuntu_22.id
+     instance_type = "t2.micro"
+     key_name      = "PEMFILE"
+     provisioner "local-exec" {
+        command = "echo 'database: \"${aws_instance.database.public_ip}\"'>/path/to/project/ansible/role/var/file"
+       
+     }
+
+     tags = {
+        Name = "database"
+        Enviroment = "dev"
+        Team = "mobile-app"
+        Type = "database"
+        }
+}
+
+output "TodoList" {
+    value = aws_instance.backend.public_ip
+  
+}
+
+output "TodoList-db" {
+    value = aws_instance.database.public_ip
+  
+}
+
+
+```
+# Create S3 bucket and object also configure bucket policy.
+```bash
+resource "aws_s3_bucket" "bucket-name" {
+  bucket = "bucket-name"
+  website {
+    index_document = "index.html"
+  }
+  tags = {
+    Type = "frontend"
+
+  }
+}
+resource "aws_s3_bucket_object" "index" {
+  depends_on = [ aws_s3_bucket.edwin-bucket ]
+  bucket       = aws_s3_bucket.edwin-bucket.bucket
+  key          = "index.html"
+  content_type = "text/html"
+  #For this deployment I saved the index.html from the web app to my local machine
+  source = "/local/path/to/index.html"
+}
+
+resource "aws_s3_bucket_public_access_block" "bucket-name" {
+  bucket = aws_s3_bucket.bucket-name.id
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+# Define the Bucket Policy
+resource "aws_s3_bucket_policy" "bucket-policy" {
+  depends_on = [ aws_instance.backend, aws_instance.database]
+  bucket = aws_s3_bucket.bucket-name.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect    = "Allow",
+        Principal = "*",
+        Action    = "s3:GetObject",
+        Resource  = "${aws_s3_bucket.bucket-name.arn}/*",
+      },
+    ],
+  })
+}
+
+# Define Bucket Ownership Controls
+resource "aws_s3_bucket_ownership_controls" "bucket-name" {
+  bucket = aws_s3_bucket.bucket-name.id
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+# Output the Bucket Website Endpoint
+output "bucket_website_endpoint" {
+  value = aws_s3_bucket.bucket-name.website_endpoint
+
+}
+
+
+```
+
+
 
 
 

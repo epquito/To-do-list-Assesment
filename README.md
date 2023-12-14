@@ -635,7 +635,41 @@ ansible-playbook -ask-vault-pass final/role.yml -i final/aws_ec2.yml -u ubuntu -
 
 
 ```
+# The directory structure should look like the following below:
+```bash
+├── final
+│   ├── aws_ec2.yml
+│   ├── backend_role
+│   │   ├── defaults
+│   │   │   └── main.yml
+│   │   ├── files
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── meta
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   └── vars
+│   │       ├── main.yml
+│   │       └── vault.yml
+│   ├── database_role
+│   │   ├── defaults
+│   │   ├── files
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── meta
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   └── vars
+│   │       └── vault.yml
+│   └── role.yml
+├── index.html
+├── main.tf
+├── provider.tf
 
+
+```
 
 
 

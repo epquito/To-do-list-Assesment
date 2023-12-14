@@ -282,9 +282,10 @@ terraform plan
 terraform apply
 ```
 # Directory should look like this 
-+-- Your_Directory_Name
++-- your-github-repo
     +-- main.tf
     +-- provider.tf
+
 
 # With the AWS resources successfully provisioned, we can now proceed to configure the EC2 instances using Ansible.
 

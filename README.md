@@ -276,7 +276,12 @@ output "bucket_website_endpoint" {
 
 
 ```
-
+After completing the creation of your AWS architecture structure for your resources, you can now initiate the deployment, and the resources specified in the main.tf file will be provisioned within your AWS account.
+```bash
+terraform plan
+terraform apply
+```
+# With the AWS resources successfully provisioned, we can now proceed to configure the EC2 instances using Ansible.
 
 
 

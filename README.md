@@ -2,6 +2,8 @@
 
 This repository provides scripts and configurations to deploy a 3-tier web application using AWS, Ansible, and Terraform.
 
+![Alt Text](https://github.com/epquito/Assesment-1/blob/main/Assesment-2.png)
+
 ## Prerequisites
 
 Before deploying the Flask application "TodoList," ensure you have the following and have a brief understading of aws resources:

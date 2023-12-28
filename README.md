@@ -2,7 +2,7 @@
 
 This repository provides scripts and configurations to deploy a 3-tier web application using AWS, Ansible, and Terraform.
 
-![Alt Text](https://github.com/epquito/Assesment-1/blob/main/Assesment-2.png)
+![Alt Text](https://github.com/epquito/To-do-list-Assesment/blob/main/Assesment-2.png)
 
 ## Prerequisites
 

@@ -232,8 +232,8 @@ resource "aws_s3_bucket" "bucket-name" {
   }
 }
 resource "aws_s3_bucket_object" "index" {
-  depends_on = [ aws_s3_bucket.edwin-bucket ]
-  bucket       = aws_s3_bucket.edwin-bucket.bucket
+  depends_on = [ aws_s3_bucket.bucket-name ]
+  bucket       = aws_s3_bucket.bucket-name.bucket
   key          = "index.html"
   content_type = "text/html"
   # For this deployment, I saved the index.html from the web app to my local machine.
